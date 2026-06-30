@@ -1,4 +1,11 @@
 import discord
+import os
+import aiohttp
+
+insert_url = "http://127.0.0.1:8000/submissions"
+home_url = 'http://127.0.0.1:8000/'
+all_submissions_url = 'http://127.0.0.1:8000/list_submissions'
+
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
@@ -6,28 +13,41 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if message.author == self.user:
             return
-        if message.content:
-            await message.channel.send('Hello!')
-
-
-        filetypes = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp')
-        for attachment in message.attachments:
-            if attachment.filename.lower().endswith(filetypes):
-                await message.channel.send(f'You sent {attachment.filename}!')
-                print('here')
-                break
+        
+        if message.content == "Send all":
+            async with aiohttp.ClientSession() as session:
+                async with session.get(all_submissions_url,) as response:
+                    print('Status: ', response.status)
+                    if(response.status == 200):
 
 
 
 
 
+        if message.attachments:
+            for attachment in message.attachments:
+                name, type = os.path.splitext(attachment.filename)
+
+                payload = {
+                    "user_id": str(message.author.id),
+                    "file_name": attachment.filename,
+                    "file_type": type
+                }
+                
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(url, json=payload ) as response:
+                        print("Status: ", response.status )
+                        if(response.status == 200):
+                            await message.channel.send("File succesfully uploaded to fastAPI database.")
+                        result = await response.json()
+                        print(result)
+                        
+            
 intents = discord.Intents.default()
 intents.message_content = True
 intents.dm_messages = True
 
 client = MyClient(intents=intents)
 client.run('')
-
-
 
 # message.channel.send('')

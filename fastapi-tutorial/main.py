@@ -5,10 +5,6 @@
 ##Needs to only return and delete one specific file from the user_id. This could perhaps be remedied by asking for more than
 ##The user_id. Perhaps a combination of user_id and file_name. Or perhaps just the id PRIMARY KEY in general.
 
-
-
-
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlite_tutorial.database import get_connection, init_db
@@ -80,7 +76,7 @@ def delete_item(user_id:str):
 ##    needs to select * from table and return that instead
 ##
 ##
-@app.get('/items')
+@app.get('/list_submissions')
 def list_submissions(submission_limit: int = 10):
     connection = get_connection()
     cursor = connection.cursor()
