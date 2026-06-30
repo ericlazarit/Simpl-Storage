@@ -19,13 +19,13 @@ class MyClient(discord.Client):
                 async with session.get(all_submissions_url,) as response:
                     print('Status: ', response.status)
                     if(response.status == 200):
-
-
-
-
+                        await message.channel.send('Here are all the submissions: ')
+                    result = await response.json()
+                    await message.channel.send(result)
 
         if message.attachments:
             for attachment in message.attachments:
+                filepath = f'files/{attachment.filename}'
                 name, type = os.path.splitext(attachment.filename)
 
                 payload = {
@@ -33,16 +33,16 @@ class MyClient(discord.Client):
                     "file_name": attachment.filename,
                     "file_type": type
                 }
-                
+
                 async with aiohttp.ClientSession() as session:
-                    async with session.post(url, json=payload ) as response:
-                        print("Status: ", response.status )
+                    async with session.post(insert_url, json=payload ) as response:
+                        print("Status: ", response.status)
                         if(response.status == 200):
                             await message.channel.send("File succesfully uploaded to fastAPI database.")
+                            await attachment.save(filepath)
                         result = await response.json()
                         print(result)
-                        
-            
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.dm_messages = True
