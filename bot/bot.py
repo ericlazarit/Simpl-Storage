@@ -1,10 +1,16 @@
 import discord
 import os
 import aiohttp
+import sys
+from secret import ENV_DISCORD_KEY
+
+
+print("Using Python: ", sys.executable)
 
 insert_url = "http://127.0.0.1:8000/submissions"
 home_url = 'http://127.0.0.1:8000/'
 all_submissions_url = 'http://127.0.0.1:8000/list_submissions'
+
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -48,6 +54,6 @@ intents.message_content = True
 intents.dm_messages = True
 
 client = MyClient(intents=intents)
-client.run('')
+client.run(ENV_DISCORD_KEY)
 
 # message.channel.send('')

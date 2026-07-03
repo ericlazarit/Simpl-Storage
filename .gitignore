@@ -1,4 +1,29 @@
-venv/
-.env
+# macOS
+.DS_Store
+
+# Python cache files
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Local secrets/config
+.env
+.env.*
+!.env.example
+bot/secret.py
+
+# Editor settings
 .vscode/
+
+# Runtime uploads and local databases
+files/
+*.db
+*.sqlite
+*.sqlite3
+people_table

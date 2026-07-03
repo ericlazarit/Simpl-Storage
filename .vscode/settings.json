@@ -1,7 +1,7 @@
 {
-  "python.defaultInterpreterPath": "/Users/ealo/Desktop/Projects/discordbot/venv/bin/python3",
+  "python.defaultInterpreterPath": "/Users/ealo/Desktop/Projects/discordbot/bot/venv/bin/python3",
   "code-runner.executorMap": {
-    "python": "/Users/ealo/Desktop/Projects/discordbot/venv/bin/python3 -u"
+    "python": "/Users/ealo/Desktop/Projects/discordbot/bot/venv/bin/python3 -u"
   },
   "python-envs.defaultEnvManager": "ms-python.python:system"
 }
