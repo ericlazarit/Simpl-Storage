@@ -17,6 +17,7 @@ from sqlite_tutorial.database import get_connection, init_db
 import sqlite3
 from secret import CLIENT_ID, CLIENT_SECRET, CLIENT_URL
 import requests
+from fastapi.responses import RedirectResponse
 
 init_db()
 
@@ -92,6 +93,11 @@ def list_submissions(submission_limit: int = 10):
     connection.close()
     return(cursor_printed)
 
+
+## This is a route that is redirected to after the user logs in. 
+## After this we get an authorization token.
+## The plan now is to use this authorization token to get the user id and redirect the user there.
+## There is no security so far with this type of workflow, but that will get done later
 @app.get('/auth/callback')
 def callback_route(code: str):
     API_ENDPOINT = 'https://discord.com/api/v10'
@@ -115,5 +121,6 @@ def callback_route(code: str):
     
     user_data = requests.get('https://discord.com/api/v10/users/@me', headers = token_header)
     user_data.raise_for_status()
-    
-    return(user_data.json())
+    user_id = user_data.json()['id']
+    RedirectResponse(url = f'/submissions/{user_id}')
+    return('Redirected')
