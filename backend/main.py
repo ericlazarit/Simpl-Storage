@@ -5,10 +5,18 @@
 ##Needs to only return and delete one specific file from the user_id. This could perhaps be remedied by asking for more than
 ##The user_id. Perhaps a combination of user_id and file_name. Or perhaps just the id PRIMARY KEY in general.
 
+
+## All routes are merely end-of-ticket stubs for the main URL which is http://127.0.0.1:8000
+## This URL is currently a local host link because this has not been deployed.
+## An example of how one of these routes can be used is the following. For the list_submissoins route
+## The URL is http://127.0.0.1:8000/list_submissions
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlite_tutorial.database import get_connection, init_db
 import sqlite3
+from secret import CLIENT_ID, CLIENT_SECRET, CLIENT_URL
+import requests
 
 init_db()
 
@@ -83,3 +91,29 @@ def list_submissions(submission_limit: int = 10):
     cursor_printed = cursor.execute("SELECT * FROM discord_files LIMIT ? ", (submission_limit,)).fetchall()
     connection.close()
     return(cursor_printed)
+
+@app.get('/auth/callback')
+def callback_route(code: str):
+    API_ENDPOINT = 'https://discord.com/api/v10'
+    begging_info = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': CLIENT_URL
+    }
+    define_begging ={
+        'Content-Type': 'application/x-www-form-urlencoded'
+
+    }
+    response = requests.post(f'{API_ENDPOINT}/oauth2/token', data=begging_info, headers=define_begging,auth=(CLIENT_ID, CLIENT_SECRET))
+    response.raise_for_status()
+    meow = response.json()
+    token = meow['access_token']
+    
+    token_header = {
+        'Authorization': f'Bearer {token}'
+    }
+    
+    user_data = requests.get('https://discord.com/api/v10/users/@me', headers = token_header)
+    user_data.raise_for_status()
+    
+    return(user_data.json())
