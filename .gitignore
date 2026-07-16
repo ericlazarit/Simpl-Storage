@@ -27,3 +27,6 @@ files/
 *.sqlite
 *.sqlite3
 people_table
+
+#React server not ready
+frontend/

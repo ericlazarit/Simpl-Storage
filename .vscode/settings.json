@@ -1,7 +1,10 @@
 {
-  "python.defaultInterpreterPath": "/Users/ealo/Desktop/Projects/discordbot/bot/venv/bin/python3",
+  "python.defaultInterpreterPath": "${workspaceFolder}/bot/venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/bot/venv/lib/python3.14/site-packages"
+  ],
   "code-runner.executorMap": {
-    "python": "/Users/ealo/Desktop/Projects/discordbot/bot/venv/bin/python3 -u"
+    "python": "${workspaceFolder}/bot/venv/bin/python -u"
   },
   "python-envs.defaultEnvManager": "ms-python.python:system"
 }

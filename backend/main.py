@@ -15,7 +15,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlite_tutorial.database import get_connection, init_db
 import sqlite3
-from secret import CLIENT_ID, CLIENT_SECRET, CLIENT_URL
+from backend.secret import CLIENT_ID, CLIENT_SECRET, CLIENT_URL
 import requests
 from fastapi.responses import RedirectResponse
 
@@ -100,27 +100,41 @@ def list_submissions(submission_limit: int = 10):
 ## There is no security so far with this type of workflow, but that will get done later
 @app.get('/auth/callback')
 def callback_route(code: str):
+     #Below is the API that this function will call in conjuction with the given code str sent to this callback route
+     #The callback route is called because I placed the link to it in the discord development portal
+     #which is http://127.0.0.1:8000/auth/callback
+
     API_ENDPOINT = 'https://discord.com/api/v10'
+    
+    #discord documentation recommended this datatype/form which is a list(?)
     begging_info = {
-        'grant_type': 'authorization_code',
-        'code': code,
+        'grant_type': 'authorization_code', #The 'grant' type is an identifier for the type of request
+        'code': code, #Again, the given code went sent through the callback function
         'redirect_uri': CLIENT_URL
     }
+
     define_begging ={
         'Content-Type': 'application/x-www-form-urlencoded'
-
     }
+    #Below is the http post request given all the aformentioned parameters
+    #Aswell as CLIENT ID AND CLIENT SECRET which are imported from secret.py for safekeeping
     response = requests.post(f'{API_ENDPOINT}/oauth2/token', data=begging_info, headers=define_begging,auth=(CLIENT_ID, CLIENT_SECRET))
+    #Basically an error check
     response.raise_for_status()
+    #Translating to json format
     meow = response.json()
+    #Accessing a specific part of the json file called 'access_token'
     token = meow['access_token']
-    
+    #Definining the type of token the above is so as to then. make a http get request
     token_header = {
         'Authorization': f'Bearer {token}'
     }
-    
+    #Below is the same as above except the above gets an access token and below gets actual user info after 
+    #using the token
     user_data = requests.get('https://discord.com/api/v10/users/@me', headers = token_header)
     user_data.raise_for_status()
     user_id = user_data.json()['id']
-    RedirectResponse(url = f'/submissions/{user_id}')
-    return('Redirected')
+    #This redirects the user to a submissions page reserved for their user_id. There is no security here yet
+    #and this is bad because theoretically, anyone could acess this page if they knew someone's user ID
+    return(RedirectResponse(url = f'/submissions/{user_id}')) 
+    #Currently redirects to a fastAPI route, later on will redirect to a REACT web page
